@@ -18,8 +18,17 @@ class Sidebar {
    * при нажатии на кнопку .sidebar-toggle
    * */
   static initToggleButton() {
-
+    const sidebarBtn = document.querySelector('a.sidebar-toggle');
+    sidebarBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const sidebarMini = document.querySelector('body.sidebar-mini');
+      sidebarMini.classList.toggle('sidebar-open');
+      sidebarMini.classList.toggle('sidebar-collapse'); 
+    });
   }
+
+
+  
 
   /**
    * При нажатии на кнопку входа, показывает окно входа
@@ -29,6 +38,22 @@ class Sidebar {
    * выходу устанавливает App.setState( 'init' )
    * */
   static initAuthLinks() {
+    document.querySelector("li.menu-item_register>a").onclick=e=>{
+      e.preventDefault();
+      App.getModal('register').open();
+      }
+    document.querySelector(".menu-item_login > a").onclick= e =>{
+      e.preventDefault();
+      App.getModal('login').open();
+        }
+    document.querySelector("li.menu-item_logout>a").onclick=e=>{
+      e.preventDefault();
+          User.logout((err,resp)=>{
+            if (resp && resp.success) {
+              App.setState('init')
+            }
+          })
+        }
 
   }
 }

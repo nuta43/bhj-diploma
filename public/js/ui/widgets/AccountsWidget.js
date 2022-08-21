@@ -14,6 +14,12 @@ class AccountsWidget {
    * необходимо выкинуть ошибку.
    * */
   constructor( element ) {
+    if (!element) {
+      throw Error('Ошибка!');
+    }
+    this.element=element;
+    this.registerEvents();
+    this.update();
 
   }
 
@@ -25,6 +31,14 @@ class AccountsWidget {
    * вызывает AccountsWidget.onSelectAccount()
    * */
   registerEvents() {
+    this.element.onclick=e=>{
+      const element=e.target.closest('li');
+      e.preventDefault();
+      if (element.classlist.contains('header')) {
+       return
+      }
+ 
+     }
 
   }
 
@@ -39,7 +53,12 @@ class AccountsWidget {
    * метода renderItem()
    * */
   update() {
-
+Account.list(null, (err,resp)=>{
+  if (resp && resp.success) {
+  resp.data.forEach(a => this.renderItem(a))
+  }
+    
+  });
   }
 
   /**
@@ -48,7 +67,7 @@ class AccountsWidget {
    * в боковой колонке
    * */
   clear() {
-
+    this.element.querySelectorAll('.account').forEach(element=>element.remove());
   }
 
   /**
@@ -59,8 +78,14 @@ class AccountsWidget {
    * Вызывает App.showPage( 'transactions', { account_id: id_счёта });
    * */
   onSelectAccount( element ) {
+    for (let elem of this.element.querySelectorAll('.active')) {
+      elem.classList.remove('active');
+    }
 
+    element.closest('.account').classList.add('active');
+    App.showPage('transactions', { account_id: element.closest('.active').dataset.id });
   }
+  
 
   /**
    * Возвращает HTML-код счёта для последующего
@@ -68,7 +93,12 @@ class AccountsWidget {
    * item - объект с данными о счёте
    * */
   getAccountHTML(item){
-
+return `<li class="active account" data-id="${item.id}">
+<a href="#">
+    <span>${item.name}</span> /
+    <span>${item.sum}</span>
+</a>
+</li>`
   }
 
   /**
@@ -78,6 +108,6 @@ class AccountsWidget {
    * и добавляет его внутрь элемента виджета
    * */
   renderItem(data){
-
+    this.element.insertAdjacentHTML('beforeend',this.getAccountHTML(data))
   }
 }
