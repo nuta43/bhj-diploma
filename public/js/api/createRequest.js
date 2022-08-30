@@ -5,7 +5,6 @@
 const createRequest = (options = {}) => {
     const xhr = new XMLHttpRequest();
     const formData= new FormData();
-    xhr.responseType = 'json';
     let url=options.url
     
     if (options.data){
@@ -15,25 +14,17 @@ const createRequest = (options = {}) => {
         else {Object.entries(options.data).forEach(v =>formData.append(...v))}
     }
 
-    xhr.onreadystatechange=()=>{
-        if(xhr.readyState===XMLHttpRequest.DONE) {
-            let err=null
-            let resp=null
-        if(xhr.status===200) {
-            let r=xhr.response
-            if(resp && resp.success) {
-                resp=r
-            }
-            else {
-                 err=r
-             }
-            } else {
-               err=new Error ("...");
-            }
-            
-        options.callback(err,resp)
-        }
+    try {
+        xhr.open(options.method, url);
+        xhr.send(formData);       
     }
-    xhr.open(options.method, url);
-    xhr.send(formData); 
-};
+    catch (err) {
+        options.callback(err, null);
+    }
+    xhr.responseType = 'json';
+    xhr.addEventListener('readystatechange', function() {
+        if (xhr.status === 200 && xhr.readyState === xhr.DONE) {           
+            options.callback(null, xhr.response);       
+        }
+    });
+}

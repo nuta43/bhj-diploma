@@ -31,16 +31,18 @@ class AccountsWidget {
    * вызывает AccountsWidget.onSelectAccount()
    * */
   registerEvents() {
-    this.element.onclick=e=>{
-      const element=e.target.closest('li');
+    const newAc = document.querySelector('.accounts-panel');
+    newAc.addEventListener('click', (e) => {
       e.preventDefault();
-      if (element.classlist.contains('header')) {
-       return
+      if (e.target.closest('span.create-account')) {
+        App.getModal('createAccount').open();
       }
- 
-     }
-
+      if (e.target.closest('li.account')) {    
+        this.onSelectAccount(e.target.closest('li.account'))
+      }
+    });
   }
+
 
   /**
    * Метод доступен только авторизованным пользователям
@@ -53,13 +55,17 @@ class AccountsWidget {
    * метода renderItem()
    * */
   update() {
-Account.list(null, (err,resp)=>{
-  if (resp && resp.success) {
-  resp.data.forEach(a => this.renderItem(a))
+    const data = User.current();
+    if (data) {
+      Account.list(data, (err, response) => {
+        if (response.success) {
+          this.clear();
+          this.renderItem(response.data);
+        }
+      });
+    }
   }
-    
-  });
-  }
+
 
   /**
    * Очищает список ранее отображённых счетов.
@@ -83,8 +89,9 @@ Account.list(null, (err,resp)=>{
     }
 
     element.closest('.account').classList.add('active');
-    App.showPage('transactions', { account_id: element.closest('.active').dataset.id });
-  }
+    App.showPage('transactions', { account_id: element.dataset.id });
+  
+}
   
 
   /**
@@ -108,6 +115,6 @@ return `<li class="active account" data-id="${item.id}">
    * и добавляет его внутрь элемента виджета
    * */
   renderItem(data){
-    this.element.insertAdjacentHTML('beforeend',this.getAccountHTML(data))
+    data.forEach(item => document.querySelector('.accounts-panel').insertAdjacentHTML('beforeend', this.getAccountHTML(item)));
   }
 }

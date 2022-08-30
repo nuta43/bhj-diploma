@@ -12,7 +12,6 @@ class Account extends Entity {
       url:this.URL+'/'+id,
       method:"GET",
       callback,
-      data,
       
     })
   }

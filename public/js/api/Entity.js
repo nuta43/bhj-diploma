@@ -44,4 +44,5 @@ class Entity {
     })
   }
 }
+
 Entity.URL='';

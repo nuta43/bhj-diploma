@@ -14,10 +14,10 @@ class AsyncForm {
    * */
   constructor(element) {
     if (!element) {
-      throw new Error('Ошибка!');
+      throw new Error("Ошибка");
     }
-    this.element=element
-    this.registerEvents()
+    this.element = element;
+    this.registerEvents();
   }
 
   /**
@@ -25,10 +25,10 @@ class AsyncForm {
    * вызывает метод submit()
    * */
   registerEvents() {
-    this.element.onSubmit=e=>{
+    this.element.addEventListener('submit', (e) => {
       e.preventDefault();
       this.submit();
-    }
+    }); 
   }
 
   /**
@@ -52,8 +52,6 @@ class AsyncForm {
    * данные, полученные из метода getData()
    * */
   submit() {
-
-    this.onSubmit(this.getData())
-
+    this.onSubmit(this.getData());
   }
 }
